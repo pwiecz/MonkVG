@@ -68,7 +68,7 @@ namespace MonkVG {
 			buildFillIfDirty();
 		}
 
-		if( paintModes & VG_STROKE_PATH && (_isStrokeDirty == true || IContext::instance().currentBatch())  ) {
+		if( (paintModes & VG_STROKE_PATH) && (_isStrokeDirty == true || IContext::instance().currentBatch())  ) {
 			buildStroke();
 			_isStrokeDirty = false;
 		}
@@ -1044,8 +1044,14 @@ namespace MonkVG {
 			gluDeleteTess( _fillTesseleator );
 			_fillTesseleator = 0;
 		}
-		
-		GL->glDeleteBuffers( 1, &_fillVBO );
+		if (_fillVBO != -1) {
+			GL->glDeleteBuffers(1, &_fillVBO);
+			_fillVBO = -1;
+		}
+		if (_strokeVBO != -1) {
+			GL->glDeleteBuffers(1, &_strokeVBO);
+			_strokeVBO = -1;
+		}
 	}
 	
 }

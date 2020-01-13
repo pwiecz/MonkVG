@@ -132,9 +132,17 @@ namespace MonkVG {
             delete _gl;
             _gl = NULL;
         }
+        if (_stroke_paint_is_orphaned) {
+            _stroke_paint_is_orphaned = false;
+            delete (OpenGLPaint*)_stroke_paint;
+        }
         _stroke_paint = NULL;
+        if (_fill_paint_is_orphaned) {
+            _fill_paint_is_orphaned = false;
+            delete (OpenGLPaint*)_fill_paint;
+        }
         _fill_paint = NULL;
-		return true;
+        return true;
 	}
 	
 	
@@ -213,7 +221,18 @@ namespace MonkVG {
 	}
 	
 	void OpenGLContext::destroyPaint( IPaint* paint ) {
-		delete (OpenGLPaint*)paint;
+		bool canDelete = true;
+		if ((OpenGLPaint*)paint == (OpenGLPaint*)_stroke_paint) {
+			_stroke_paint_is_orphaned = true;
+			canDelete = false;
+		}
+		if ((OpenGLPaint*)paint == (OpenGLPaint*)_fill_paint) {
+			_fill_paint_is_orphaned = true;
+			canDelete = false;
+		}
+		if (canDelete) {
+			delete (OpenGLPaint*)paint;
+		}
 	}
 	
 	IPaint* OpenGLContext::createPaint() {
@@ -232,7 +251,7 @@ namespace MonkVG {
 	
 	void OpenGLContext::destroyBatch( IBatch* batch ) {
 		if ( batch ) {
-			delete batch;
+			delete (OpenGLBatch*)batch;
 		}
 	}
 	
@@ -243,7 +262,7 @@ namespace MonkVG {
 	}
 	void OpenGLContext::destroyImage( IImage* image ) {
 		if ( image ) {
-			delete image;
+			delete (OpenGLImage*)image;
 		}
 	}
 	
@@ -252,7 +271,7 @@ namespace MonkVG {
 	}
 	void OpenGLContext::destroyFont( IFont* font ) {
 		if ( font ) {
-			delete font;
+			delete (OpenGLFont*)font;
 		}
 	}
 
@@ -261,6 +280,12 @@ namespace MonkVG {
 	/// state 
 	void OpenGLContext::setStrokePaint( IPaint* paint ) {
 		if ( paint != _stroke_paint ) {
+			if (_stroke_paint_is_orphaned) {
+				_stroke_paint_is_orphaned = false;
+				if ((OpenGLPaint*)_stroke_paint != (OpenGLPaint*)_fill_paint) {
+					delete (OpenGLPaint*)_stroke_paint;
+				}
+			}
 			IContext::setStrokePaint( paint );
 			OpenGLPaint* glPaint = (OpenGLPaint*)_stroke_paint;
 			//glPaint->setGLState();
@@ -271,6 +296,12 @@ namespace MonkVG {
 	
 	void OpenGLContext::setFillPaint( IPaint* paint ) {
 		if ( paint != _fill_paint ) {
+			if (_fill_paint_is_orphaned) {
+				_fill_paint_is_orphaned = false;
+				if ((OpenGLPaint*)_fill_paint != (OpenGLPaint*)_stroke_paint) {
+					delete (OpenGLPaint*)_fill_paint;
+				}
+			}
 			IContext::setFillPaint( paint );
 			OpenGLPaint* glPaint = (OpenGLPaint*)_fill_paint;
 			//glPaint->setGLState();

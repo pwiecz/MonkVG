@@ -111,14 +111,16 @@ VG_API_CALL VGErrorCode vgGetError(void)
 
 
 namespace MonkVG {
-	
+
 	IContext::IContext() 
 		:	_error( VG_NO_ERROR )
 		,	_width( 0 )
 		,	_height( 0 )
 		,	_stroke_line_width( 1.0f )
 		,	_stroke_paint( 0 )
+		,	_stroke_paint_is_orphaned(false)
 		,	_fill_paint( 0 )
+		,	_fill_paint_is_orphaned(false)
 		,	_active_matrix( &_path_user_to_surface )
 		,	_fill_rule( VG_EVEN_ODD )
 		,	_renderingQuality( VG_RENDERING_QUALITY_BETTER )

@@ -191,7 +191,6 @@ namespace MonkVG {
         virtual void setRenderingBackendType( VGRenderingBackendTypeMNK backendRenderer ) { _backendRenderer = backendRenderer; }
 	
 	protected:
-	
 		// surface properties
 		VGint				_width, _height;
 		VGfloat				_clear_color[4];
@@ -212,7 +211,10 @@ namespace MonkVG {
 
 		// paints
 		IPaint*				_stroke_paint;
+		bool				_stroke_paint_is_orphaned;
+
 		IPaint*				_fill_paint;
+		bool				_fill_paint_is_orphaned;
 		VGFillRule			_fill_rule;
 		
 		// font
